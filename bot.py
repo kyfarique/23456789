@@ -6,10 +6,10 @@ import sqlite3
 import threading
 import http.server
 import urllib.parse
+import urllib.request  # <-- ВСТРОЕННАЯ БИБЛИОТЕКА ВМЕСТО REQUESTS
 import datetime
 import asyncio
 
-import requests
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command, CommandObject
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, MenuButtonCommands
@@ -27,7 +27,6 @@ ADMIN_ID  = "6109042131"
 DAILY_LIMIT = 5
 WEB_PORT    = int(os.getenv("PORT", "5000"))
 
-# ✅ ТВОЯ НОВАЯ ССЫЛКА ДЛЯ СЛОТОВ (с меткой sub1)
 PARTNER_URL = "https://r1wagwk.com/casino/list?open=register&p=qksttrpxqi&sub1={uid}"
 
 # ============================================================
@@ -394,8 +393,8 @@ class PostbackHandler(http.server.BaseHTTPRequestHandler):
             user = get_user(uid)
             lang = user['lang'] if user else 'ru'
             text = LANG[lang]['regged']
-            url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={uid}&text={requests.utils.quote(text)}&parse_mode=HTML"
-            try: requests.get(url, timeout=10)
+            url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={uid}&text={urllib.parse.quote(text)}&parse_mode=HTML"
+            try: urllib.request.urlopen(url, timeout=10)
             except: pass
 
             if user and user.get('referrer_id'):
@@ -404,8 +403,8 @@ class PostbackHandler(http.server.BaseHTTPRequestHandler):
                 if ref_user:
                     ref_lang = ref_user['lang']
                     ref_text = LANG[ref_lang]['ref_notify'].format(count=ref_user['ref_count']) if ref_user['ref_count'] < 3 else LANG[ref_lang]['ref_success']
-                    ref_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={ref_id}&text={requests.utils.quote(ref_text)}&parse_mode=HTML"
-                    try: requests.get(ref_url, timeout=10)
+                    ref_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={ref_id}&text={urllib.parse.quote(ref_text)}&parse_mode=HTML"
+                    try: urllib.request.urlopen(ref_url, timeout=10)
                     except: pass
 
             self.send_response(200); self.end_headers()
